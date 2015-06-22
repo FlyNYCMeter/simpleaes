@@ -22,15 +22,15 @@ type Aes struct {
 func New(size int, key string, more ...string) (*Aes, error) {
     padded := make([]byte, size)
     copy(padded, []byte(key))
-    var iv []byte
-    if len(more) > 0 {
-        iv = []byte(more[0])
-    } else {
-        iv = make([]byte, size)
-    }
     aes, err := aes.NewCipher(padded)
     if err != nil {
         return nil, err
+    }
+    var iv []byte
+    if len(more) > 0 {
+        iv = []byte(more[0])[0:aes.BlockSize()]
+    } else {
+        iv = make([]byte, aes.BlockSize())
     }
     enc := cipher.NewCBCEncrypter(aes, iv)
     dec := cipher.NewCBCDecrypter(aes, iv)
